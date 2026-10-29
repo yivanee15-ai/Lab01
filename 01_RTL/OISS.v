@@ -93,6 +93,13 @@ always @(*) begin
     T       = 9'd0;
     max_fin = 9'd0;
     best    = 3'd0;
+    start   = 9'd0;
+    found   = 1'b0;
+    elig    = 1'b0;
+    avail_j = 1'b0;
+    avail_b = 1'b0;
+    better  = 1'b0;
+    Ex_cycle = 9'd0;
     Inst_order_O = 24'd0;
     for (i = 0; i < 8; i = i + 1) begin
         fin[i]   = 9'd0;
@@ -112,7 +119,10 @@ always @(*) begin
         found = 1'b0;
         best  = 3'd0;
         for (j = 0; j < 8; j = j + 1) begin
-            elig = !issued[j] && ((pred[j] & ~issued) == 8'd0);
+            elig    = !issued[j] && ((pred[j] & ~issued) == 8'd0);
+            avail_j = 1'b0;
+            avail_b = 1'b0;
+            better  = 1'b0;
             if (elig) begin
                 if (!found) begin
                     found = 1'b1;
