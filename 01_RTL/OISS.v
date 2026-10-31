@@ -43,6 +43,7 @@ reg [8:0] start;
 reg [8:0] max_fin;
 reg       found, elig, avail_j, avail_b, better;
 reg [2:0] best;
+reg [23:0] order_t;
 
 always @(*) begin
     // ----- decode -----
@@ -99,8 +100,7 @@ always @(*) begin
     avail_j = 1'b0;
     avail_b = 1'b0;
     better  = 1'b0;
-    Ex_cycle = 9'd0;
-    Inst_order_O = 24'd0;
+    order_t = 24'd0;
     for (i = 0; i < 8; i = i + 1) begin
         fin[i]   = 9'd0;
         ready[i] = 9'd0;
@@ -147,11 +147,13 @@ always @(*) begin
         fin[best] = start + {3'd0, lat[best]};
         T = start + 9'd1;
         issued[best] = 1'b1;
-        Inst_order_O[3*k +: 3] = best;
+        order_t[3*k +: 3] = best;
         if (fin[best] > max_fin) max_fin = fin[best];
     end
 
-    Ex_cycle = max_fin;
+    // outputs are written exactly once, so they never show a half-built value
+    Inst_order_O = order_t;
+    Ex_cycle     = max_fin;
 end
 
 endmodule
